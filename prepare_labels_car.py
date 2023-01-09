@@ -9,22 +9,13 @@ show_info = True
 images_with_required_classes = 0
 total_images = 0
 labels = {
-    'go': 0,
-    'stop': 1,
-    'stopLeft': 2,
-    'goLeft': 3,
-    'warning': 4,
-    'warningLeft': 5,
+    'vehicle': 6
 }
 
-root_folder_names = ['dayTrain', 'nightTrain']
-root_folder_name_mapper = {
-    'dayTrain': 'dayClip',
-    'nightTrain': 'nightClip'
-}
 
-annotation_root = './input/traffic_light/fl/Annotations/Annotations'
-image_root = './input/traffic_light/fl'
+
+annotation_root = '../input/lisa_traffic_light_dataset/lisa-traffic-light-dataset/Annotations/Annotations'
+image_root = '../input/lisa_traffic_light_dataset/lisa-traffic-light-dataset'
 
 
 def get_coords(tag, x_min, y_min, x_max, y_max, images_with_required_classes):
@@ -36,29 +27,14 @@ def get_coords(tag, x_min, y_min, x_max, y_max, images_with_required_classes):
         normalize. Each image is 1280 in width and 960 in height. 
         """
         if tag in labels:
-            if tag == 'go':
+            if tag == 'vehicle':
                 label = labels['go']
                 color = (0, 255, 0)
-            elif tag == 'stop':
-                label = labels['stop']
-                color = (0, 0, 255)
-            elif tag == 'stopLeft':
-                label = labels['stopLeft']
-                color = (0, 0, 155)
-            elif tag == 'goLeft':
-                label = labels['goLeft']
-                color = (0, 200, 200)
-            elif tag == 'warning':
-                label = labels['warning']
-                color = (29, 118, 255)
-            elif tag == 'warningLeft':
-                label = labels['warningLeft']
-                color = (0 , 118, 255)
 
             x_center = ((x_max + x_min) / 2) / 1280 
-            y_center = ((y_max + y_min) / 2) / 960
+            y_center = ((y_max + y_min) / 2) / 720
             w = (x_max - x_min) / 1280
-            h = (y_max - y_min) / 960
+            h = (y_max - y_min) / 720
             return label, x_center, y_center, w, h
         else:
             label = ''
@@ -113,7 +89,7 @@ for root_folder_name in root_folder_names:
                                                     x_max[file_counter],
                                                     y_max[file_counter], 
                                                     images_with_required_classes)
-                        with open(f"./input/traffic_light/input/labels/{image_name.split('.')[0]}.txt", 'a+') as f:
+                        with open(f"../input/lisa_traffic_light_dataset/input/labels/{image_name.split('.')[0]}.txt", 'a+') as f:
                             if type(label) == int:
                                 f.writelines(f"{label} {x} {y} {w} {h}\n")
                                 f.close()
@@ -121,7 +97,7 @@ for root_folder_name in root_folder_names:
                                 f.writelines(f"")
                                 f.close()
                             image = cv2.imread(image_path, cv2.IMREAD_COLOR)
-                            cv2.imwrite(f"./input/traffic_light/input/images/{image_name}", image)
+                            cv2.imwrite(f"../input/lisa_traffic_light_dataset/input/images/{image_name}", image)
                             file_counter += 1
                         # continue
                     if file_name != image_name:
