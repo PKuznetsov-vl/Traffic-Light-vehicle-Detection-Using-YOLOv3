@@ -4,15 +4,17 @@ import torch.distributed as dist
 import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
 from torch.utils.tensorboard import SummaryWriter
+from tqdm import tqdm
 
 import test  # import test.py to get mAP after each epoch
 from models import *
 from utils.datasets import *
 from utils.utils import *
 
-mixed_precision = True
+mixed_precision = False
 try:  # Mixed precision training https://github.com/NVIDIA/apex
-    from apex import amp
+    pass
+    #from apex import amp
 except:
     print('Apex recommended for faster mixed precision training: https://github.com/NVIDIA/apex')
     mixed_precision = False  # not installed
@@ -160,8 +162,8 @@ def train(hyp):
                 parameter.requires_grad_(False)                                                                                                                                      
 
     # Mixed precision training https://github.com/NVIDIA/apex
-    if mixed_precision:
-        model, optimizer = amp.initialize(model, optimizer, opt_level='O1', verbosity=0)
+    # if mixed_precision:
+    #     model, optimizer = amp.initialize(model, optimizer, opt_level='O1', verbosity=0)
 
     # Scheduler https://arxiv.org/pdf/1812.01187.pdf
     lf = lambda x: (((1 + math.cos(x * math.pi / epochs)) / 2) ** 1.0) * 0.95 + 0.05  # cosine
@@ -287,8 +289,9 @@ def train(hyp):
             # Backward
             loss *= batch_size / 64  # scale loss
             if mixed_precision:
-                with amp.scale_loss(loss, optimizer) as scaled_loss:
-                    scaled_loss.backward()
+                pass
+                # with amp.scale_loss(loss, optimizer) as scaled_loss:
+                #     scaled_loss.backward()
             else:
                 loss.backward()
 

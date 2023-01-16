@@ -18,7 +18,7 @@ annotation_root = '../input/lisa_traffic_light_dataset/lisa-traffic-light-datase
 image_root = '../input/lisa_traffic_light_dataset/lisa-traffic-light-dataset'
 
 
-def get_coords(tag, x_min, y_min, x_max, y_max, images_with_required_classes):
+def get_coords(tag, x_min, y_min, x_max, y_max):
         """
         We will return a single digit for each label.
         Also we will return normalized x_center, y_center, 
@@ -68,45 +68,58 @@ if show_info:
     print(df.head())
     print(f"Total images in current folder: {len(image_paths)}")
 
-tags = df['label'].values
-x_min = df['x0'].values
-y_min = df['y0'].values
-x_max = df['x1'].values
-y_max = df['y1'].values
+# tags = df['label'].values
+# x_min = df['x0'].values
+# y_min = df['y0'].values
+# x_max = df['x1'].values
+# y_max = df['y1'].values
 
-#file_counter = 0  # to counter through CSV file
+
 # iterate through all image paths
-for file_counter, image_path in tqdm(enumerate(image_paths), total=len(image_paths)):
+for i, image_path in tqdm(enumerate(image_paths), total=len(image_paths)):
     image_name = image_path.split(os.path.sep)[-1]
-    #print('img',image_name)
-    # iterate through all CSV rows
-    for j in range(len(df)):
-        if file_counter < len(df):
-            print(df.loc[file_counter]['image_filename'])
-            file_name = df.loc[5]['image_filename']
-            #print('fl', file_name)
-            if file_name == image_name:
+    if image_name in df['image_filename'].values:
+        print('True')
 
-                label, x, y, w, h = get_coords(tags[file_counter],
-                                               x_min[file_counter],
-                                               y_min[file_counter],
-                                               x_max[file_counter],
-                                               y_max[file_counter],
-                                               images_with_required_classes)
-                with open(f"./input/vehicle/input/labels/{image_name.split('.')[0]}.txt",
-                          'a+') as f:
-                    if type(label) == int:
-                        f.writelines(f"{label} {x} {y} {w} {h}\n")
-                        f.close()
-                    else:
-                        f.writelines(f"")
-                        f.close()
-                    image = cv2.imread(image_path, cv2.IMREAD_COLOR)
-                    cv2.imwrite(f"./input/vehicle/input/images/{image_name}", image)
-                    #file_counter += 1
-                # continue
-            if file_name != image_name:
-                break
+        imgdf = df.loc[df['image_filename']==image_name]
+        print('img', image_name)
+        print('fl', imgdf)
+        with open(f"./input/traffic_light/input/labels/{image_name.split('.')[0]}.txt",
+                  'a+') as f:
+
+            for i,row in imgdf.iterrows():
+
+                label, x, y, w, h = get_coords(row['label'],
+                                                   row['x0'],
+                                                   row['y0'],
+                                                   row['x1'],
+                                                   row['y1'])
+                f.writelines(f"{label} {x} {y} {w} {h}\n")
+        f.close()
+
+
+    # # iterate through all CSV rows
+    # for file_counter in range(len(df)):
+    #     if file_counter < len(df):
+    #         #print(df.loc[file_counter]['image_filename'])
+    #         file_name = df.loc[file_counter]['image_filename']
+    #         print(file_counter)
+    #         print('fl', file_name)
+    #         if file_name == image_name:
+    #             #print(df.loc[file_counter]['image_filename'])
+    #             label, x, y, w, h = get_coords(tags[file_counter],
+    #                                            x_min[file_counter],
+    #                                            y_min[file_counter],
+    #                                            x_max[file_counter],
+    #                                            y_max[file_counter],
+    #                                            images_with_required_classes)
+
+        image = cv2.imread(image_path, cv2.IMREAD_COLOR)
+        cv2.imwrite(f"./input/traffic_light/input/images/{image_name}", image)
+
+        # continue
+    # if file_name != image_name:
+    #     break
 
 print(f"Total images parsed through: {total_images}")
 # print(f"Total images with desired classes: {images_with_required_classes}")

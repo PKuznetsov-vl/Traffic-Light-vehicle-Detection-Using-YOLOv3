@@ -8,7 +8,7 @@ import numpy as np
 import random
 
 # get all the image file names from `input/images/*`
-image_files = os.listdir('../input/lisa_traffic_light_dataset/input/images')
+image_files = os.listdir('./input/traffic_light/input/images')
 
 # we will use 80% for training and 20% for validation
 train_indices = []
@@ -28,9 +28,9 @@ print(f"Validation images: {len(valid_indices)}")
 
 for i in train_indices:
     with open('data/train.txt', 'a') as train_file:
-        train_file.writelines(f"../input/lisa_traffic_light_dataset/input/images/{image_files[i]}\n")
+        train_file.writelines(f"./input/traffic_light/input/images/{image_files[i]}\n")
 
 for i in valid_indices:
     with open('data/val.txt', 'a') as val_file:
-        val_file.writelines(f"../input/lisa_traffic_light_dataset/input/images/{image_files[i]}\n")
+        val_file.writelines(f"./input/traffic_light/input/images/{image_files[i]}\n")
         i += 1
