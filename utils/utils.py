@@ -421,14 +421,14 @@ def build_targets(p, targets, model):
     # Build targets for compute_loss(), input targets(image,class,x,y,w,h)
     nt = targets.shape[0]
     tcls, tbox, indices, anch = [], [], [], []
-    gain = torch.ones(6, device=targets.device)  # normalized to gridspace gain
-    off = torch.tensor([[1, 0], [0, 1], [-1, 0], [0, -1]], device=targets.device).float()  # overlap offsets
+    gain = torch.ones(6, device="cuda")  # normalized to gridspace gain
+    off = torch.tensor([[1, 0], [0, 1], [-1, 0], [0, -1]], device="cuda").float()  # overlap offsets
 
     style = None
     multi_gpu = type(model) in (nn.parallel.DataParallel, nn.parallel.DistributedDataParallel)
     for i, j in enumerate(model.yolo_layers):
         anchors = model.module.module_list[j].anchor_vec if multi_gpu else model.module_list[j].anchor_vec
-        gain[2:] = torch.tensor(p[i].shape)[[3, 2, 3, 2]]  # xyxy gain
+        gain[2:] = torch.tensor(p[i].shape,device="cuda")[[3, 2, 3, 2]]  # xyxy gain
         na = anchors.shape[0]  # number of anchors
         at = torch.arange(na).view(na, 1).repeat(1, nt)  # anchor tensor, same as .repeat_interleave(nt)
 

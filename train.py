@@ -1,5 +1,5 @@
 import argparse
-
+import torch
 import torch.distributed as dist
 import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
@@ -11,7 +11,13 @@ from models import *
 from utils.datasets import *
 from utils.utils import *
 
-mixed_precision = False
+mixed_precision = True
+
+
+torch.cuda.empty_cache()
+#provides a good alternative for clearing the occupied cuda memory and we can also manually clear the not in use variables by using,
+torch.cuda.memory_summary(device=None, abbreviated=False)
+
 try:  # Mixed precision training https://github.com/NVIDIA/apex
     pass
     #from apex import amp
@@ -278,8 +284,8 @@ def train(hyp):
                     imgs = F.interpolate(imgs, size=ns, mode='bilinear', align_corners=False)
 
             # Forward
-            pred = model(imgs)
-
+            pred = model(imgs,device)
+            #rint(pred)
             # Loss
             loss, loss_items = compute_loss(pred, targets, model)
             if not torch.isfinite(loss):
@@ -420,7 +426,8 @@ if __name__ == '__main__':
     opt.data = check_file(opt.data)  # check file
     print(opt)
     opt.img_size.extend([opt.img_size[-1]] * (3 - len(opt.img_size)))  # extend to 3 sizes (min, max, test)
-    device = torch_utils.select_device(opt.device, apex=mixed_precision, batch_size=opt.batch_size)
+    device = torch_utils.select_device(opt.device, batch_size=opt.batch_size)
+    print(device.type)
     if device.type == 'cpu':
         mixed_precision = False
 

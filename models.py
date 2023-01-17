@@ -244,6 +244,7 @@ class Darknet(nn.Module):
             return self.forward_once(x)
         else:  # Augment images (inference and test only) https://github.com/ultralytics/yolov3/issues/931
             img_size = x.shape[-2:]  # height, width
+            print(img_size)
             s = [0.83, 0.67]  # scales
             y = []
             for i, xi in enumerate((x,
@@ -252,11 +253,11 @@ class Darknet(nn.Module):
                                     )):
                 # cv2.imwrite('img%g.jpg' % i, 255 * xi[0].numpy().transpose((1, 2, 0))[:, :, ::-1])
                 y.append(self.forward_once(xi)[0])
-
+            #print('y',len(y[0][0]))
             y[1][..., :4] /= s[0]  # scale
             y[1][..., 0] = img_size[1] - y[1][..., 0]  # flip lr
             y[2][..., :4] /= s[1]  # scale
-
+            #print('y', y)
             # for i, yi in enumerate(y):  # coco small, medium, large = < 32**2 < 96**2 <
             #     area = yi[..., 2:4].prod(2)[:, :, None]
             #     if i == 1:

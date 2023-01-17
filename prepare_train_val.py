@@ -28,9 +28,9 @@ print(f"Validation images: {len(valid_indices)}")
 
 for i in train_indices:
     with open('data/train.txt', 'a') as train_file:
-        train_file.writelines(f"./input/traffic_light/input/images/{image_files[i]}\n")
+        train_file.writelines(f"/home/pavel/PycharmProjects/Traffic-Light-Detection-Using-YOLOv3/input/traffic_light/input/images/{image_files[i]}\n")
 
 for i in valid_indices:
     with open('data/val.txt', 'a') as val_file:
-        val_file.writelines(f"./input/traffic_light/input/images/{image_files[i]}\n")
+        val_file.writelines(f"/home/pavel/PycharmProjects/Traffic-Light-Detection-Using-YOLOv3/input/traffic_light/input/images/{image_files[i]}\n")
         i += 1
